@@ -3,16 +3,16 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.dependencies import get_db
 from app.models import User
-from app.schemas.login import UserCreate, UserOut, Token
+from app.schemas.login import UserCreate, UserResponse, Token
 from app.utils import hash_password, verify_password
 from app.auth import create_access_token, get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
-@router.post("/register", response_model=UserOut)
+@router.post("/register", response_model=UserResponse)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
     if db.query(User).filter((User.email == user_data.email) | (User.username == user_data.username)).first():
-        raise HTTPException(status_code=400, detail="Email or username already registered")
+        raise HTTPException(status_code=400, detail="User already registered")
 
     new_user = User(
         email=user_data.email,
@@ -37,6 +37,6 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     return {"access_token": token, "token_type": "bearer"}
 
 
-@router.get("/users/me", response_model=UserOut)
-def read_users_me(current_user: User = Depends(get_current_user)):
+@router.get("/users/me", response_model=UserResponse)
+def get_current_user(current_user: User = Depends(get_current_user)):
     return current_user

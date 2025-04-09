@@ -8,16 +8,15 @@ class UserCreate(BaseModel):
     first_name: str
     last_name: str
 
-class UserOut(BaseModel):
+class UserResponse(BaseModel):
     id: int
     email: EmailStr
     username: str
     first_name: str
     last_name: str
     is_active: bool
-
-    class Config:
-        orm_mode = True
+    is_staff: bool
+    is_superuser: bool
 
 class Token(BaseModel):
     access_token: str
