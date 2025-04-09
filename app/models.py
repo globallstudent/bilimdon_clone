@@ -74,7 +74,6 @@ class Question(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
 
-    option_ids: Mapped[List["Option"]] = relationship(back_populates="question")
     games: Mapped[List["GameQuestion"]] = relationship(back_populates="question")
     options: Mapped[List["Option"]] = relationship(back_populates="question")
 
@@ -106,7 +105,6 @@ class Option(Base):
     is_correct: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
 
-    question_ids = relationship("Question", back_populates="option_ids")
     submissions: Mapped[List["Submission"]] = relationship(back_populates="option")
     question: Mapped["Question"] = relationship(back_populates="options")
 
