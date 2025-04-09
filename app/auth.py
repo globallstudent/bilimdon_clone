@@ -8,9 +8,16 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from typing import Optional
 
-SECRET_KEY = "OIUYCJFGJHGFDSA!@#$%^&*&*()_+98987654321"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
