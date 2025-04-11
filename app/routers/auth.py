@@ -9,9 +9,14 @@ from app.auth import create_access_token, get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
+
 @router.post("/register", response_model=UserResponse)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
-    if db.query(User).filter((User.email == user_data.email) | (User.username == user_data.username)).first():
+    if (
+        db.query(User)
+        .filter((User.email == user_data.email) | (User.username == user_data.username))
+        .first()
+    ):
         raise HTTPException(status_code=400, detail="User already registered")
 
     new_user = User(
@@ -19,7 +24,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
         username=user_data.username,
         hashed_password=hash_password(user_data.password),
         first_name=user_data.first_name,
-        last_name=user_data.last_name
+        last_name=user_data.last_name,
     )
     db.add(new_user)
     db.commit()
@@ -28,7 +33,9 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/token", response_model=Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+):
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
