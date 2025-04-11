@@ -79,3 +79,4 @@ def delete_option(
     db.delete(option)
     db.commit()
     return
+
