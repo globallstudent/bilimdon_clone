@@ -1,13 +1,10 @@
 from pydantic import BaseModel
 
-class TopicBase(BaseModel):
+
+class TopicResponse(BaseModel):
+    id: int
     name: str
 
-class TopicCreate(TopicBase):
-    pass
 
-class TopicResponse(TopicBase):
-    id: int
-
-    class Config:
-        from_attributes = True
+class TopicCreate(BaseModel):
+    name: str

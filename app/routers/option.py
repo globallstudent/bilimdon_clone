@@ -1,82 +1,96 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from app import models, schemas
-from app.dependencies import get_db
-from typing import List
-from app.schemas.option import OptionCreate, OptionResponse
-from app.auth import get_current_user
+from fastapi import APIRouter, HTTPException
 
-router = APIRouter(prefix="/options", tags=["Options"])
+from app.dependencies import db_dep, current_user_dep
+from app.models import Option, Question
+from app.schemas.option import OptionCreate, OptionUpdate, OptionResponse
 
-@router.post("/", response_model=List[OptionResponse])
-def create_option(
-    option: schemas.option.OptionCreate, 
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    db_option = models.Option(**option.dict())
+
+router = APIRouter(prefix="/options", tags=["options"])
+
+
+@router.get("/", response_model=list[OptionResponse])
+async def get_options(db: db_dep):
+    return db.query(Option).all()
+
+
+@router.get("/{id}", response_model=OptionResponse)
+async def get_option(id: int, db: db_dep):
+    option = db.query(Option).filter(Option.id == id).first()
+
+    if not option:
+        raise HTTPException(
+            status_code=404,
+            detail="Option not found."
+        )
+    
+    return option
+
+
+@router.post("/create/", response_model=OptionResponse)
+async def create_option(
+        option: OptionCreate, 
+        db: db_dep,
+        current_user: current_user_dep
+    ):
+    existing_correct_option = db.query(Option).filter(
+        Option.question_id == option.question_id, 
+        Option.is_correct == True
+    ).first()
+
+    if existing_correct_option and option.is_correct:
+        raise HTTPException(
+            status_code=400,
+            detail="Question already has a correct option."
+        )
+
+    db_option = Option(
+        **option.model_dump()
+        )
+
     db.add(db_option)
     db.commit()
     db.refresh(db_option)
+
     return db_option
 
-@router.get("/question/{question_id}", response_model=List[OptionResponse])
-def get_options_by_question(
-    question_id: int, 
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    return db.query(models.Option).filter(models.Option.question_id == question_id).all()
 
-@router.get("/", response_model=List[OptionResponse])
-def list_options(
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    return db.query(models.Option).all()
+@router.put("/update/{id}", response_model=OptionResponse)
+async def update_option(
+        id: int, 
+        option: OptionUpdate, 
+        db: db_dep
+    ):
+    db_option = db.query(Option).filter(Option.id == id).first()
 
+    if not db_option:
+        raise HTTPException(
+            status_code=404,
+            detail="Option not found."
+        )
 
-
-@router.get("/{option_id}", response_model=OptionResponse)
-def get_option(
-    option_id: int, 
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    option = db.query(models.Option).filter(models.Option.id == option_id).first()
-    if not option:
-        raise HTTPException(status_code=404, detail="Option not found")
-    return option
-
-@router.put("/{option_id}", response_model=OptionResponse)
-def update_option(
-    option_id: int, 
-    option_update: OptionCreate, 
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    option = db.query(models.Option).filter(models.Option.id == option_id).first()
-    if not option:
-        raise HTTPException(status_code=404, detail="Option not found")
-
-    for field, value in option_update.dict(exclude_unset=True).items():
-        setattr(option, field, value)
+    db_option.title = option.title if option.title else db_option.title
+    db_option.is_correct = option.is_correct if option.is_correct else db_option.is_correct
 
     db.commit()
-    db.refresh(option)
-    return option
+    db.refresh(db_option)
 
-@router.delete("/{option_id}", status_code=204)
-def delete_option(
-    option_id: int, 
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    option = db.query(models.Option).filter(models.Option.id == option_id).first()
-    if not option:
-        raise HTTPException(status_code=404, detail="Option not found")
+    return db_option
 
-    db.delete(option)
+
+@router.delete("/delete/{id}")
+async def delete_option(id: int, db: db_dep):
+    db_option = db.query(Option).filter(Option.id == id).first()
+
+    if not db_option:
+        raise HTTPException(
+            status_code=404,
+            detail="Option not found."
+        )
+
+    db.delete(db_option)
     db.commit()
-    return
 
+    return {
+        "option_id": id,
+        "message": "Option deleted."
+    }

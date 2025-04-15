@@ -1,5 +1,14 @@
-from fastapi import FastAPI
-from app.routers import auth, users, topic, question, option
+from typing import Union
+import time
+from datetime import datetime
+
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+
+from app.routers.auth import router as auth_router
+from app.routers.question import router as question_router
+from app.routers.option import router as option_router
+from app.routers.topic import router as topic_router
 
 from app.admin import admin
 # from starlette.routing import Mount
@@ -8,11 +17,10 @@ from starlette.applications import Starlette
 
 app = FastAPI()
 
-app.include_router(auth.router)
-app.include_router(users.router)
-app.include_router(topic.router)
-app.include_router(question.router)
-app.include_router(option.router)
+app.include_router(auth_router)
+app.include_router(question_router)
+app.include_router(option_router)
+app.include_router(topic_router)
 
 admin.mount_to(app)
 
