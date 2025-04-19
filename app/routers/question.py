@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.dependencies import db_dep, current_user_dep
 from app.models import Question
-from app.schemas.question import QuestionResponse, QuestionCreate, QuestionUpdate
+from app.schemas import QuestionResponse, QuestionCreate, QuestionUpdate
 
 
 router = APIRouter(prefix="/questions", tags=["questions"])

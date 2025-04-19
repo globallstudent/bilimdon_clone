@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.dependencies import db_dep, current_user_dep, admin_user_dep, staff_user_dep
 from app.models import Topic
-from app.schemas.topic import TopicCreate, TopicResponse
+from app.schemas import TopicCreate, TopicResponse
 
 
 router = APIRouter(prefix="/topics", tags=["topics"])

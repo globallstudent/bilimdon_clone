@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.dependencies import db_dep, current_user_dep
 from app.models import Option, Question
-from app.schemas.option import OptionCreate, OptionUpdate, OptionResponse
+from app.schemas import OptionCreate, OptionUpdate, OptionResponse
 
 
 router = APIRouter(prefix="/options", tags=["options"])
