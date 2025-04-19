@@ -4,8 +4,8 @@ from fastapi.openapi.models import APIKey, APIKeyIn, SecuritySchemeType
 from fastapi.openapi.utils import get_openapi
 from fastapi.security import HTTPBearer
 from starlette_admin.contrib.sqla import Admin, ModelView
+from app.admin.settings import admin
 
-from app.admin import admin
 
 from typing import Union
 import time
@@ -23,11 +23,6 @@ from app.routers.submission import router as sub_router
 
 app = FastAPI()
 
-from app.admin import admin
- # from starlette.routing import Mount
-from starlette.applications import Starlette
-
-
 
 app.include_router(auth_router)
 app.include_router(question_router)
@@ -39,7 +34,7 @@ app.include_router(sub_router)
 
 
 
-admin.mount_to(app)
+admin.mount_to(app=app)
  
 @app.get("/")
 async def root():
