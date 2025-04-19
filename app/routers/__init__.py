@@ -5,3 +5,4 @@ from .option import *
 from .topic import *
 from .participation import *
 from .submission import *
+from .user import *

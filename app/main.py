@@ -5,6 +5,8 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.security import HTTPBearer
 from starlette_admin.contrib.sqla import Admin, ModelView
 
+from app.admin import admin
+
 from typing import Union
 import time
 from datetime import datetime
@@ -17,15 +19,7 @@ from app.routers.game import router as game_router
 from app.routers.participation import router as p_router
 from app.routers.submission import router as sub_router
 
-
-
-admin = Admin(engine, title="Bilimdon Admin")
  
-admin.add_view(ModelView(User))
-admin.add_view(ModelView(Topic))
-admin.add_view(ModelView(Question))
-admin.add_view(ModelView(Option))
-
 
 app = FastAPI()
 
@@ -45,15 +39,15 @@ app.include_router(sub_router)
 
 
 
- admin.mount_to(app)
+admin.mount_to(app)
  
- @app.get("/")
- async def root():
-     return {
-         "GitHub Repository": "https://github.com/globallstudent/bilimdon_clone",
-         "Swagger Docs": "Go to https://globalstudent-bilimdon.loca.lt/docs to see API docs",
-         "Admin Panel": "Go to /admin to access Starlette Admin"
-     }
+@app.get("/")
+async def root():
+    return {
+        "GitHub Repository": "https://github.com/globallstudent/bilimdon_clone",
+        "Swagger Docs": "Go to https://globalstudent-bilimdon.loca.lt/docs to see API docs",
+        "Admin Panel": "Go to /admin to access Starlette Admin"
+    }
 
 
 def custom_openapi():
