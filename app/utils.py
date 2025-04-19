@@ -6,7 +6,7 @@ from jose import JWTError, jwt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 ALGORITHM = "HS256"
-SECRET_KEY = "globallstudent@example.com"
+SECRET_KEY = "void@pointer"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_MINUTES = 1800
 
