@@ -34,7 +34,7 @@ class UserResponse(BaseModel):
     is_superuser: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserUpdate(BaseModel):
     email: str = None
@@ -47,7 +47,7 @@ class UserUpdate(BaseModel):
     is_superuser: bool = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserCreate(BaseModel):
     email: str
@@ -58,7 +58,7 @@ class UserCreate(BaseModel):
     birthdate: str = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserInDB(UserResponse):
 
@@ -68,7 +68,7 @@ class UserInDB(UserResponse):
     is_superuser: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserInDBUpdate(BaseModel):
     email: str = None
@@ -81,7 +81,7 @@ class UserInDBUpdate(BaseModel):
     is_superuser: bool = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserInDBResponse(BaseModel):
     id: int
@@ -96,7 +96,7 @@ class UserInDBResponse(BaseModel):
     is_superuser: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserInDBUpdateResponse(BaseModel):
@@ -111,5 +111,5 @@ class UserInDBUpdateResponse(BaseModel):
     is_superuser: bool = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 

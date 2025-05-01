@@ -27,19 +27,13 @@ def get_current_user(
     is_bearer = auth_header.startswith("Bearer ") if auth_header else False
     token = auth_header.split(" ")[1] if auth_header else ""
 
-    if not auth_header and is_bearer:
-        raise HTTPException(
-            status_code=401,
-            detail="You are not authenticated."
-        )
+    if not is_bearer:
+        raise HTTPException(status_code=401, detail="Invalid or missing Authorization header.")
+
 
 
     try:
-        decoded_jwt = jwt.decode(
-            token,
-            SECRET_KEY,
-            ALGORITHM
-        )
+        decoded_jwt = jwt.decode(token, SECRET_KEY, ALGORITHM)
         print(decoded_jwt)
         email = decoded_jwt.get("email")
         password = decoded_jwt.get("password")
